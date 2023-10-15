@@ -17,6 +17,8 @@ public class ProductDTO {
     private String desc;
     private String sku;
     private double price;
+    private Long quantity;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private Long categoryId;
 }

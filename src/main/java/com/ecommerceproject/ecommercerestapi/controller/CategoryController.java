@@ -41,5 +41,4 @@ public class CategoryController {
     public ResponseEntity<String> deleteCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(iCategoryService.deleteCategoryById(id));
     }
-
 }

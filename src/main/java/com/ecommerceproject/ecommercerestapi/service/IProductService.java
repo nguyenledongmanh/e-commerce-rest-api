@@ -10,6 +10,6 @@ public interface IProductService {
 
     ProductDTO getProductById(Long id);
     ProductDTO updatePostById(Long id, ProductDTO productDTO);
-
     String deleteById(Long id);
+    List<ProductDTO> getCategoriesByCategoryId(Long categoryId);
 }
