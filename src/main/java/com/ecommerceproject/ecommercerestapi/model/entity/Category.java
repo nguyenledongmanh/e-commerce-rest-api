@@ -9,33 +9,33 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "products", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
-public class Product {
+@Table(name = "categories", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "description", nullable = false)
     private String desc;
 
-    @Column(name = "stock_keeping_unit", nullable = false)
-    private String sku;
-    @Column(nullable = false)
-    private double price;
-
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime modifiedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
 }
