@@ -1,15 +1,18 @@
 package com.ecommerceproject.ecommercerestapi.security;
 
 import com.ecommerceproject.ecommercerestapi.exception.ECommerceAPIException;
+import com.ecommerceproject.ecommercerestapi.model.entity.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 
 @Component
@@ -23,14 +26,22 @@ public class JWTokenProvider {
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
-
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
+        Collection<?> authorities = authentication.getAuthorities();
+        boolean isAdmin = false;
+        for (Object role : authorities) {
+            if (((SimpleGrantedAuthority) role).getAuthority().contains("ADMIN")) {
+                isAdmin = true;
+                break;
+            }
+        }
 
         return Jwts.builder()
                    .setSubject(username)
                    .setIssuedAt(new Date())
                    .setExpiration(expireDate)
+                   .claim("isAdmin", isAdmin)
                    .signWith(key())
                    .compact();
     }

@@ -21,7 +21,7 @@ public class Image {
     @Column(name = "image_data", length = 100000)
     private byte[] imageData;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 }
