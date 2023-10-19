@@ -4,11 +4,17 @@ import com.ecommerceproject.ecommercerestapi.exception.ResourceNotFoundException
 import com.ecommerceproject.ecommercerestapi.model.dto.ProductDTO;
 import com.ecommerceproject.ecommercerestapi.model.entity.Category;
 import com.ecommerceproject.ecommercerestapi.model.entity.Product;
+import com.ecommerceproject.ecommercerestapi.model.payload.ProductResponse;
 import com.ecommerceproject.ecommercerestapi.repository.ICategoryRepository;
 import com.ecommerceproject.ecommercerestapi.repository.IProductRepository;
 import com.ecommerceproject.ecommercerestapi.service.IProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,11 +45,27 @@ public class IProductServiceImpl
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() {
-        return iProductRepository.findAll()
-                                 .stream()
-                                 .map(product -> modelMapper.map(product, ProductDTO.class))
-                                 .toList();
+    public ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy)
+                                                                              .ascending() : Sort.by(sortBy)
+                                                                                                 .descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Product> products = iProductRepository.findAll(pageable);
+
+        List<Product> listOfPosts = products.getContent();
+        List<ProductDTO> content = listOfPosts.stream()
+                                           .map(post -> modelMapper.map(post, ProductDTO.class))
+                                           .toList();
+
+        ProductResponse response = new ProductResponse();
+        response.setContent(content);
+        response.setPageNo(products.getNumber());
+        response.setPageSize(products.getSize());
+        response.setTotalElements(products.getTotalElements());
+        response.setTotalPages(products.getTotalPages());
+        response.setLast(products.isLast());
+
+        return response;
     }
 
     @Override

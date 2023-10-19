@@ -3,10 +3,15 @@ package com.ecommerceproject.ecommercerestapi.service.impl;
 import com.ecommerceproject.ecommercerestapi.exception.ResourceNotFoundException;
 import com.ecommerceproject.ecommercerestapi.model.dto.CategoryDTO;
 import com.ecommerceproject.ecommercerestapi.model.entity.Category;
+import com.ecommerceproject.ecommercerestapi.model.payload.CategoryResponse;
 import com.ecommerceproject.ecommercerestapi.repository.ICategoryRepository;
 import com.ecommerceproject.ecommercerestapi.service.ICategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,11 +34,27 @@ public class ICategoryServiceImpl
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories() {
-        return iCategoryRepository.findAll()
-                                  .stream()
-                                  .map(category -> modelMapper.map(category, CategoryDTO.class))
-                                  .toList();
+    public CategoryResponse getAllCategories(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy)
+                                                                              .ascending() : Sort.by(sortBy)
+                                                                                                 .descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Category> categories = iCategoryRepository.findAll(pageable);
+
+        List<Category> listOfPosts = categories.getContent();
+        List<CategoryDTO> content = listOfPosts.stream()
+                                               .map(category -> modelMapper.map(category, CategoryDTO.class))
+                                               .toList();
+
+        CategoryResponse response = new CategoryResponse();
+        response.setContent(content);
+        response.setPageNo(categories.getNumber());
+        response.setPageSize(categories.getSize());
+        response.setTotalElements(categories.getTotalElements());
+        response.setTotalPages(categories.getTotalPages());
+        response.setLast(categories.isLast());
+
+        return response;
     }
 
     @Override

@@ -18,5 +18,4 @@ public class CategoryDTO {
     private String desc;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private List<ProductDTO> products;
 }

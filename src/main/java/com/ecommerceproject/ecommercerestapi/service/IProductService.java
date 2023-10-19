@@ -1,12 +1,13 @@
 package com.ecommerceproject.ecommercerestapi.service;
 
 import com.ecommerceproject.ecommercerestapi.model.dto.ProductDTO;
+import com.ecommerceproject.ecommercerestapi.model.payload.ProductResponse;
 
 import java.util.List;
 
 public interface IProductService {
     ProductDTO createProduct(ProductDTO productDTO);
-    List<ProductDTO> getAllProducts();
+    ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDir);
 
     ProductDTO getProductById(Long id);
     ProductDTO updatePostById(Long id, ProductDTO productDTO);

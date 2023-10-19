@@ -1,6 +1,5 @@
 package com.ecommerceproject.ecommercerestapi.controller;
 
-import com.ecommerceproject.ecommercerestapi.model.dto.ImageResponse;
 import com.ecommerceproject.ecommercerestapi.service.IImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/images")
@@ -21,27 +19,27 @@ public class ImageController {
     private IImageService iImageService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file,
-                                         @RequestParam("productId") Long productId) throws
+                                         @RequestParam("productId") Long productId,
+                                         @RequestParam("name") String imageName) throws
             IOException {
-        String uploadImage = iImageService.uploadImage(file, productId);
+        String uploadImage = iImageService.uploadImage(file, productId, imageName);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(uploadImage);
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<?> downloadImage(@PathVariable String name) {
-        byte[] data = iImageService.getImage(name);
+    @GetMapping("/{fileName}")
+    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
+        byte[] imageData = iImageService.getImage(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                              .contentType(MediaType.valueOf("image/png"))
-                             .body(data);
+                             .body(imageData);
     }
 
     @GetMapping("/products/{productId}")
-    public ResponseEntity<?> getAllImagesByProductId(@PathVariable("productId") Long productId) {
-        List<String> images = iImageService.getImagesByProductId(productId);
-        return ResponseEntity.status(HttpStatus.OK)
-                             .body(images);
+    public ResponseEntity<String> getImageByProductId(@PathVariable("productId") Long id) {
+        return ResponseEntity.ok(iImageService.getImageName(id));
     }
+
 }

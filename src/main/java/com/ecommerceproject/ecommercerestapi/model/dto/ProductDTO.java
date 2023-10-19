@@ -22,5 +22,4 @@ public class ProductDTO {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private Long categoryId;
-    private ImageDTO image;
 }

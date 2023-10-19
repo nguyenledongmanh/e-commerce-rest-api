@@ -8,10 +8,11 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IImageService {
-    String uploadImage(MultipartFile file, Long productId) throws
+    String uploadImage(MultipartFile file, Long productId, String imageName) throws
             IOException;
 
-    byte[] getImage(String name);
+    byte[] getImage(String fileName);
 
-    List<String> getImagesByProductId(Long productId);
+    String getImageName(Long productId);
+
 }
