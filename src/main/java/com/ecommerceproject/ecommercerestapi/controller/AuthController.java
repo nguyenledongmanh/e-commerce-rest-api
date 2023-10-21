@@ -4,6 +4,7 @@ import com.ecommerceproject.ecommercerestapi.model.dto.JWTAuthResponse;
 import com.ecommerceproject.ecommercerestapi.model.dto.LoginDTO;
 import com.ecommerceproject.ecommercerestapi.model.dto.RegisterDTO;
 import com.ecommerceproject.ecommercerestapi.service.IAuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/register", "/sign-up"})
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO registerDTO) {
         String response = iAuthService.register(registerDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

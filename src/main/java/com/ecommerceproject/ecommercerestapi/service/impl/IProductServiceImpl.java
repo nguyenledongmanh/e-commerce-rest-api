@@ -3,9 +3,11 @@ package com.ecommerceproject.ecommercerestapi.service.impl;
 import com.ecommerceproject.ecommercerestapi.exception.ResourceNotFoundException;
 import com.ecommerceproject.ecommercerestapi.model.dto.ProductDTO;
 import com.ecommerceproject.ecommercerestapi.model.entity.Category;
+import com.ecommerceproject.ecommercerestapi.model.entity.Image;
 import com.ecommerceproject.ecommercerestapi.model.entity.Product;
 import com.ecommerceproject.ecommercerestapi.model.payload.ProductResponse;
 import com.ecommerceproject.ecommercerestapi.repository.ICategoryRepository;
+import com.ecommerceproject.ecommercerestapi.repository.IImageRepository;
 import com.ecommerceproject.ecommercerestapi.repository.IProductRepository;
 import com.ecommerceproject.ecommercerestapi.service.IProductService;
 import org.modelmapper.ModelMapper;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +29,9 @@ public class IProductServiceImpl
     private IProductRepository iProductRepository;
     @Autowired
     private ICategoryRepository iCategoryRepository;
+
+    @Autowired
+    private IImageRepository iImageRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -54,8 +58,8 @@ public class IProductServiceImpl
 
         List<Product> listOfPosts = products.getContent();
         List<ProductDTO> content = listOfPosts.stream()
-                                           .map(post -> modelMapper.map(post, ProductDTO.class))
-                                           .toList();
+                                              .map(post -> modelMapper.map(post, ProductDTO.class))
+                                              .toList();
 
         ProductResponse response = new ProductResponse();
         response.setContent(content);
@@ -95,7 +99,14 @@ public class IProductServiceImpl
 
     @Override
     public String deleteById(Long id) {
-        iProductRepository.deleteById(id);
+        Product product = iProductRepository.findById(id)
+                                            .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
+                                                                                             String.valueOf(id)));
+        Image image = product.getImage();
+        if (image != null) {
+            iImageRepository.delete(image);
+        }
+        iProductRepository.delete(product);
         return "Successfully Deleted";
     }
 

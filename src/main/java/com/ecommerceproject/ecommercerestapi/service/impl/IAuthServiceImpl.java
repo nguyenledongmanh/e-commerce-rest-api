@@ -68,8 +68,8 @@ public class IAuthServiceImpl
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        Role userRole = iRoleRepository.findByName("ROLE_USER")
-                                      .orElseThrow(() -> new ResourceNotFoundException("Role", "name", "ROLE_USER"));
+        Role userRole = iRoleRepository.findByName("ROLE_ADMIN")
+                                      .orElseThrow(() -> new ResourceNotFoundException("Role", "name", "ROLE_ADMIN"));
         roles.add(userRole);
         user.setRoles(roles);
 
